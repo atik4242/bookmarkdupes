@@ -197,6 +197,10 @@ function getTableCheckboxRules() {
   return document.getElementById("tableCheckboxRules");
 }
 
+function getPreferredPatternsTable() {
+  return document.getElementById("preferredPatterns");
+}
+
 function isCheckedFullUrl() {
   return isChecked("checkboxFullUrl");
 }
@@ -292,7 +296,9 @@ function appendCheckbox(parent, id, title, checked, enabled) {
   if (checked) {
     checkbox.checked = checked;
   }
-  checkbox.id = id;
+  if (id) {
+    checkbox.id = id;
+  }
   if (!enabled) {
     checkbox.disabled = true;
   }
@@ -327,6 +333,113 @@ function appendButton(parent, id, titleId, text, titleText, enabled,
     button.style.fontWeight = compatible.getMessage(fontWeightId);
   }
   parent.appendChild(button);
+}
+
+function appendPreferredPattern(row, pattern, enabled) {
+  appendCol(row, appendCheckbox, null, "titlePreferredPatternEnabled",
+    (enabled !== false), true);
+  const textarea = document.createElement("TEXTAREA");
+  textarea.title = compatible.getMessage("titlePreferredPattern");
+  textarea.cols = 40;
+  textarea.rows = 1;
+  textarea.value = (pattern || "");
+  appendCol(row, textarea);
+}
+
+function getPreferredPatternRow(row) {
+  const checkbox = row.childNodes[0].firstChild;
+  const pattern = row.childNodes[1].firstChild.value;
+  if (!pattern) {
+    return null;
+  }
+  return {
+    enabled: checkbox.checked,
+    pattern: pattern
+  };
+}
+
+function getPreferredPatterns() {
+  const table = getPreferredPatternsTable();
+  const patterns = [];
+  if (!table) {
+    return patterns;
+  }
+  for (let row of table.childNodes) {
+    const pattern = getPreferredPatternRow(row);
+    if (pattern) {
+      patterns.push(pattern);
+    }
+  }
+  return patterns;
+}
+
+function redisplayPreferredPatterns(patterns) {
+  const table = getPreferredPatternsTable();
+  clearItem(table);
+  if (!patterns || !patterns.length) {
+    patterns = [ {} ];
+  }
+  const total = patterns.length;
+  let count = 0;
+  for (let pattern of patterns) {
+    const stringCount = String(++count);
+    const row = document.createElement("TR");
+    appendPreferredPattern(row, pattern.pattern, pattern.enabled);
+    const colUp = document.createElement("TD");
+    if ((count > 1) && (total > 1)) {
+      appendButton(colUp, "preferredPatternButton=/" + stringCount,
+        "titleButtonRuleUp", compatible.getMessage("buttonRuleUp"), null,
+        true, "buttonRuleUpFontWeight");
+    }
+    row.appendChild(colUp);
+    const colDown = document.createElement("TD");
+    if (count < total) {
+      appendButton(colDown, "preferredPatternButton=*" + stringCount,
+        "titleButtonRuleDown", compatible.getMessage("buttonRuleDown"),
+        null, true, "buttonRuleDownFontWeight");
+    }
+    row.appendChild(colDown);
+    appendCol(row, appendButton, "preferredPatternButton=-" + stringCount,
+      "titleButtonRuleSub", compatible.getMessage("buttonRuleSub"), null,
+      true);
+    appendCol(row, appendButton, "preferredPatternButton=+" + stringCount,
+      "titleButtonRuleAdd", compatible.getMessage("buttonRuleAdd"), null,
+      true);
+    table.appendChild(row);
+  }
+}
+
+function appendPreferredPatterns(parent) {
+  const table = document.createElement("TABLE");
+  table.id = "preferredPatterns";
+  table.title = compatible.getMessage("titlePreferredPatterns");
+  parent.appendChild(table);
+  redisplayPreferredPatterns();
+}
+
+function buttonPreferredPattern(action) {
+  const patterns = getPreferredPatterns();
+  let number = Number(action.substr(1));
+  const type = action.substr(0, 1);
+  switch(type) {
+    case "+":
+      patterns.splice(number, 0, {});
+      break;
+    case "-":
+      patterns.splice(number - 1, 1);
+      break;
+    case "/":
+      --number;
+    case "*": {
+        const pattern = patterns[number - 1];
+        patterns[number - 1] = patterns[number];
+        patterns[number] = pattern;
+      }
+      break;
+    default:  // should not happen
+      return;
+  }
+  redisplayPreferredPatterns(patterns);
 }
 
 function getRule(row) {
@@ -749,12 +862,32 @@ function addButtonsMark(mode) {
     appendCol(row2, appendButton, "buttonMarkButNewest",
       "titleButtonMarkButNewest");
     table.appendChild(row2);
+    const row3 = document.createElement("TR");
+    appendTextNodeCol(row3, compatible.getMessage("preferredPatterns"),
+      compatible.getMessage("titlePreferredPatterns"));
+    appendCol(row3, appendPreferredPatterns);
+    table.appendChild(row3);
+    const row4 = document.createElement("TR");
+    appendCol(row4, appendButton, "buttonMarkButPreferredPattern",
+      "titleButtonMarkButPreferredPattern");
+    table.appendChild(row4);
+    const row5 = document.createElement("TR");
+    appendCol(row5, appendButton, "buttonPreferredPatternsStoreLocal",
+      "titleButtonPreferredPatternsStoreLocal", null, null, true);
+    appendCol(row5, appendButton, "buttonPreferredPatternsRestoreLocal",
+      "titleButtonPreferredPatternsRestoreLocal", null, null, true);
+    appendCol(row5, appendButton, "buttonPreferredPatternsCleanLocal",
+      "titleButtonPreferredPatternsCleanLocal", null, null, true);
+    table.appendChild(row5);
   }
   let row = document.createElement("TR");
   appendCol(row, appendButton, "buttonMarkAll", "titleButtonMarkAll");
   appendCol(row, appendButton, "buttonUnmarkAll", "titleButtonUnmarkAll");
   table.appendChild(row);
   getButtonsMark().appendChild(table);
+  if (!mode) {
+    preferredPatternsRestoreLocal();
+  }
 }
 
 function addButtonsMode(mode) {
@@ -1184,6 +1317,85 @@ function markButNewest() {
   if (largestNode !== null) {
     setCheck(largestNode, false);
   }
+}
+
+function getBookmarkName(node) {
+  const link = node.querySelector("A");
+  return (link ? link.textContent : node.textContent);
+}
+
+function getPreferredPatternRank(text, patterns) {
+  for (let i = 0; i < patterns.length; ++i) {
+    if (patterns[i].test(text)) {
+      return i;
+    }
+  }
+  return null;
+}
+
+function getPreferredPatternList() {
+  const patterns = [];
+  for (let preferredPattern of getPreferredPatterns()) {
+    if (!preferredPattern.enabled) {
+      continue;
+    }
+    const pattern = preferredPattern.pattern.trim();
+    if (!pattern) {
+      continue;
+    }
+    try {
+      patterns.push(new RegExp(pattern, "i"));
+    } catch(error) {
+      displayMessage(compatible.getMessage("messageBadPreferredPattern",
+        pattern));
+      return null;
+    }
+  }
+  return patterns;
+}
+
+function markButPreferredPattern() {
+  const patterns = getPreferredPatternList();
+  if (!patterns) {
+    return;
+  }
+  const top = getTop(true);
+  if (!top) {
+    return;
+  }
+  let group = [];
+  function markGroup() {
+    if (!group.length) {
+      return;
+    }
+    let keep = 0;
+    let keepRank = null;
+    for (let i = 0; i < group.length; ++i) {
+      const rank = group[i].rank;
+      if (rank === null) {
+        continue;
+      }
+      if ((keepRank === null) || (rank < keepRank)) {
+        keep = i;
+        keepRank = rank;
+      }
+    }
+    for (let i = 0; i < group.length; ++i) {
+      setCheck(group[i].node, (i !== keep));
+    }
+  }
+  for (let node of top.childNodes) {
+    if (!isCheckbox(node)) {  // ruler
+      markGroup();
+      group = [];
+      continue;
+    }
+    group.push({
+      node: node,
+      rank: getPreferredPatternRank(getBookmarkName(node), patterns)
+    });
+  }
+  markGroup();
 }
 
 function getSelectedIds(folderIds) {
@@ -2288,6 +2500,27 @@ function rulesClean(storageArea) {
   compatible.browser.storage[storageArea].clear();
 }
 
+function preferredPatternsStoreLocal() {
+  compatible.browser.storage.local.set({
+    preferredPatternsV1: getPreferredPatterns()
+  });
+}
+
+function preferredPatternsRestoreLocal() {
+  compatible.storageGet("local", function (storage) {
+    redisplayPreferredPatterns((storage && storage.preferredPatternsV1) || []);
+  }, function () {
+    redisplayPreferredPatterns([]);
+  });
+}
+
+function preferredPatternsCleanLocal() {
+  compatible.browser.storage.local.set({
+    preferredPatternsV1: []
+  });
+  redisplayPreferredPatterns([]);
+}
+
 function marked(state, id) {
   if (!state.marked) {
     return;
@@ -2603,6 +2836,18 @@ function initMain() {
       case "buttonMarkButNewest":
         markWrapper(markButNewest);
         return;
+      case "buttonMarkButPreferredPattern":
+        markWrapper(markButPreferredPattern);
+        return;
+      case "buttonPreferredPatternsStoreLocal":
+        preferredPatternsStoreLocal();
+        return;
+      case "buttonPreferredPatternsRestoreLocal":
+        preferredPatternsRestoreLocal();
+        return;
+      case "buttonPreferredPatternsCleanLocal":
+        preferredPatternsCleanLocal();
+        return;
       case "buttonMarkFolder":
         markWrapper(markFolder, state.folderIds, true);
         return;
@@ -2667,6 +2912,10 @@ function initMain() {
         if (id.startsWith("regexpButton=")) {
           buttonRule(id.substring(13),  // 13 = "regexpButton=".length
             mutationObserver);
+          return;
+        }
+        if (id.startsWith("preferredPatternButton=")) {
+          buttonPreferredPattern(id.substring(23));
           return;
         }
       // checkboxes: handled by checkboxListener()

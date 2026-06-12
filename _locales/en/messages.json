@@ -267,6 +267,63 @@
     "message": "Additionally the newest bookmark in each group will be unmarked.",
     "description": "Explain that additionally the newest bookmark in each group will be unmarked"
   },
+  "preferredPatterns": {
+    "message": "Preferred patterns",
+    "description": "Label for preferred patterns"
+  },
+  "titlePreferredPatterns": {
+    "message": "Regular expressions in priority order. In each group, the first match in this order is kept unmarked. If nothing matches, the first entry is kept unmarked.",
+    "description": "Explain preferred pattern priority"
+  },
+  "titlePreferredPatternEnabled": {
+    "message": "Enable or disable this preferred pattern.",
+    "description": "Explain preferred pattern checkbox"
+  },
+  "titlePreferredPattern": {
+    "message": "Regular expression for a preferred bookmark title.",
+    "description": "Explain preferred pattern field"
+  },
+  "buttonMarkButPreferredPattern": {
+    "message": "Mark all but preferred pattern",
+    "description": "Button for marking all but the preferred pattern"
+  },
+  "titleButtonMarkButPreferredPattern": {
+    "message": "In each group, the first match of the preferred patterns is kept unmarked. If nothing matches, the first entry is kept unmarked.",
+    "description": "Explain that the preferred pattern in each group will be unmarked"
+  },
+  "messageBadPreferredPattern": {
+    "message": "Invalid preferred pattern: $PATTERN$",
+    "description": "Error message for an invalid preferred pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "buttonPreferredPatternsStoreLocal": {
+    "message": "\u21d2 local storage",
+    "description": "Button for storing preferred patterns locally"
+  },
+  "titleButtonPreferredPatternsStoreLocal": {
+    "message": "Store the preferred patterns in local storage.",
+    "description": "Explain storing preferred patterns locally"
+  },
+  "buttonPreferredPatternsRestoreLocal": {
+    "message": "\u21d0 local storage",
+    "description": "Button for restoring preferred patterns from local storage"
+  },
+  "titleButtonPreferredPatternsRestoreLocal": {
+    "message": "Restore the preferred patterns from local storage.",
+    "description": "Explain restoring preferred patterns from local storage"
+  },
+  "buttonPreferredPatternsCleanLocal": {
+    "message": "\u00d7 local storage",
+    "description": "Button for cleaning preferred patterns from local storage"
+  },
+  "titleButtonPreferredPatternsCleanLocal": {
+    "message": "Remove the preferred patterns from local storage.",
+    "description": "Explain cleaning preferred patterns from local storage"
+  },
   "buttonMarkAll": {
     "message": "Mark all",
     "description": "Button for marking all"

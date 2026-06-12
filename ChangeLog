@@ -1,5 +1,10 @@
 # ChangeLog for bookmarkdupes
 
+*bookmarkdupes-6.7.2:
+	atik4242:
+	- Add marking by preferred patterns
+	- Allow storing preferred patterns and disabling individual patterns
+
 *bookmarkdupes-6.7.1:
 	atik4242:
 	- Keep CheckboxStateChange as a fallback, guarding against duplicate events

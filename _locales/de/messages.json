@@ -267,6 +267,63 @@
     "message": "Zusätzlich wird die Markierung des jüngsten Lesezeichens jeder Gruppe entfernt.",
     "description": "Explain that additionally the newest bookmark in each group will be unmarked"
   },
+  "preferredPatterns": {
+    "message": "Bevorzugte Muster",
+    "description": "Label for preferred patterns"
+  },
+  "titlePreferredPatterns": {
+    "message": "Reguläre Ausdrücke in bevorzugter Reihenfolge. In jeder Gruppe bleibt der erste Treffer nach dieser Reihenfolge unmarkiert. Ohne Treffer bleibt der erste Eintrag unmarkiert.",
+    "description": "Explain preferred pattern priority"
+  },
+  "titlePreferredPatternEnabled": {
+    "message": "Dieses bevorzugte Muster aktivieren oder deaktivieren.",
+    "description": "Explain preferred pattern checkbox"
+  },
+  "titlePreferredPattern": {
+    "message": "Regulärer Ausdruck für einen bevorzugten Lesezeichentitel.",
+    "description": "Explain preferred pattern field"
+  },
+  "buttonMarkButPreferredPattern": {
+    "message": "Alle außer bevorzugtem Muster markieren",
+    "description": "Button for marking all but the preferred pattern"
+  },
+  "titleButtonMarkButPreferredPattern": {
+    "message": "In jeder Gruppe bleibt der erste Treffer der bevorzugten Muster unmarkiert. Ohne Treffer bleibt der erste Eintrag unmarkiert.",
+    "description": "Explain that the preferred pattern in each group will be unmarked"
+  },
+  "messageBadPreferredPattern": {
+    "message": "Ungültiges bevorzugtes Muster: $PATTERN$",
+    "description": "Error message for an invalid preferred pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "buttonPreferredPatternsStoreLocal": {
+    "message": "\u21d2 lokaler Speicher",
+    "description": "Button for storing preferred patterns locally"
+  },
+  "titleButtonPreferredPatternsStoreLocal": {
+    "message": "Bevorzugte Muster im lokalen Speicher ablegen.",
+    "description": "Explain storing preferred patterns locally"
+  },
+  "buttonPreferredPatternsRestoreLocal": {
+    "message": "\u21d0 lokaler Speicher",
+    "description": "Button for restoring preferred patterns from local storage"
+  },
+  "titleButtonPreferredPatternsRestoreLocal": {
+    "message": "Bevorzugte Muster aus dem lokalen Speicher wiederherstellen.",
+    "description": "Explain restoring preferred patterns from local storage"
+  },
+  "buttonPreferredPatternsCleanLocal": {
+    "message": "\u00d7 lokaler Speicher",
+    "description": "Button for cleaning preferred patterns from local storage"
+  },
+  "titleButtonPreferredPatternsCleanLocal": {
+    "message": "Bevorzugte Muster aus dem lokalen Speicher entfernen.",
+    "description": "Explain cleaning preferred patterns from local storage"
+  },
   "buttonMarkAll": {
     "message": "Alle markieren",
     "description": "Button for marking all"
